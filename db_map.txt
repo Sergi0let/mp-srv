@@ -1,0 +1,7 @@
+users
+products
+shops
+sellers
+orders
+favorites(?)
+cart(?)
