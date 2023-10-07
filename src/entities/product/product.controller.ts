@@ -1,17 +1,23 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
   ParseIntPipe,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-// import { Request, Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 
-// import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from './product.sevice';
+
+import { renameUploadedFile } from '@helpers/fileUploader';
+import { PRODUCT_IMAGES_FOLDER_PATH } from '@const/storagePaths';
 
 @Controller({ path: 'products' })
 export class ProductController {
@@ -36,8 +42,16 @@ export class ProductController {
   // POST /products/
   @Post('/')
   @HttpCode(201)
-  async createProduct(@Body() body: any) {
-    await this.productService.createProduct(body);
+  @UseInterceptors(FileInterceptor('image'))
+  async createProduct(@Body() body: any, @UploadedFile() image: Multer.File) {
+    const renamedFilename = renameUploadedFile(
+      image.originalname,
+      PRODUCT_IMAGES_FOLDER_PATH,
+    );
+    await this.productService.createProduct({
+      ...body,
+      image: renamedFilename,
+    });
     return { status: 'ok' };
   }
 

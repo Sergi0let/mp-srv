@@ -14,8 +14,8 @@ export class Product {
   @Column({ name: 'price', type: 'int' })
   price: number;
 
-  @Column({ name: 'price_dicounted', type: 'int' })
-  priceDicounted: number;
+  @Column({ name: 'price_discount', type: 'int' })
+  priceDiscount: number;
 
   @Column({ name: 'image', type: 'varchar', nullable: true })
   image: string;

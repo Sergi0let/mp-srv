@@ -5,3 +5,9 @@ sellers
 orders
 favorites(?)
 cart(?)
+
+price_discounted
+
+products_db
+
+docker-compose up -d --build

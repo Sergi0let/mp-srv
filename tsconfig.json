@@ -12,7 +12,9 @@
     "baseUrl": "./",
     "paths": {
       "@db/*": ["src/db/*"],
-      "@entities/*": ["src/entities/*"]
+      "@entities/*": ["src/entities/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@const/*": ["src/const/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
