@@ -16,7 +16,7 @@ import { Multer } from 'multer';
 
 import { ProductService } from './product.sevice';
 
-import { renameUploadedFile } from '@helpers/fileUploader';
+import { getMulterOptions, renameUploadedFile } from '@helpers/fileUploader';
 import { PRODUCT_IMAGES_FOLDER_PATH } from '@const/storagePaths';
 
 @Controller({ path: 'products' })
@@ -42,10 +42,12 @@ export class ProductController {
   // POST /products/
   @Post('/')
   @HttpCode(201)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileInterceptor('image', getMulterOptions('images/products')),
+  )
   async createProduct(@Body() body: any, @UploadedFile() image: Multer.File) {
     const renamedFilename = renameUploadedFile(
-      image.originalname,
+      image.filename,
       PRODUCT_IMAGES_FOLDER_PATH,
     );
     await this.productService.createProduct({
