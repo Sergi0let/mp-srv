@@ -1,7 +1,7 @@
+import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
 
 import { AppModule } from './app.module';
 
@@ -20,6 +20,6 @@ async function bootstrap() {
   );
   await app.listen(process.env.SERVER_PORT);
 
-  console.log('__dirname', join(__dirname, '..', 'storage'));
+  console.log(process.env.NODE_ENV!);
 }
 bootstrap();
