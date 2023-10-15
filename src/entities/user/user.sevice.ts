@@ -5,6 +5,7 @@ import { genSalt, hash } from 'bcrypt';
 
 import { User } from './user.entity';
 import { UpdateUserDto } from './dto/update.user.dto';
+import { RegisterUserDto } from './dto/registerUser.dto';
 
 @Injectable()
 export class UserService {
@@ -34,7 +35,7 @@ export class UserService {
   }
 
   // Registery new user
-  public async createUser(userData: any) {
+  public async createUser(userData: RegisterUserDto) {
     const salt = await genSalt(10);
     const hashPassword = await hash(userData.password, salt);
     const newUser = this.userRepository.create({
@@ -42,6 +43,12 @@ export class UserService {
       password: hashPassword,
     });
     await this.userRepository.save(newUser);
+  }
+
+  public async getUserByLoginOrEmail(loginOrEmail: string) {
+    return await this.userRepository.findOne({
+      where: [{ email: loginOrEmail }, { login: loginOrEmail }],
+    });
   }
 
   // Get user data By Id

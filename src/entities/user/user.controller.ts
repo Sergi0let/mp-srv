@@ -6,31 +6,32 @@ import {
   Patch,
   Post,
   Put,
-  Req,
   Res,
-  UseInterceptors,
   ParseIntPipe,
   Body,
   HttpCode,
   HostParam,
+  HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { compare } from 'bcrypt';
 
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.sevice';
-import { UpdateUserDto } from './dto/update.user.dto';
 
-@Controller({ path: 'users', host: ':account.test.com' })
+import { UpdateUserDto } from './dto/update.user.dto';
+import { LoginUserDto } from './dto/loginUser.dto';
+import { RegisterUserDto } from './dto/registerUser.dto';
+
+import { ForbiddenException } from '@helpers/exceptions';
+
+@Controller({ path: 'users' })
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // GET /users/
   @Get('/')
   @HttpCode(200)
-  async getAllUsers(
-    @HostParam('account') account: string,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async getAllUsers(@HostParam('account') account: string) {
     console.log(account);
     const users = await this.userService.getAllUsers();
     return { status: 'ok', body: [users] };
@@ -44,12 +45,35 @@ export class UserController {
     return res.send({ status: 'ok', data: userData });
   }
 
-  // POST /users/
-  @Post('/')
-  @UseInterceptors(FileInterceptor(''))
-  async createUser(@Req() req: Request, @Res() res: Response) {
-    await this.userService.createUser(req.body);
-    return res.send({ status: 'ok' });
+  // POST /users/ - login in app
+  @Post('/login')
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() body: LoginUserDto) {
+    const { loginOrEmail, password } = body;
+
+    const foundUser =
+      await this.userService.getUserByLoginOrEmail(loginOrEmail);
+
+    console.log('foundUser', foundUser);
+
+    if (!foundUser) {
+      throw new ForbiddenException();
+    }
+
+    const isPasswordMatch = await compare(password, foundUser.password);
+
+    if (!isPasswordMatch) {
+      throw new ForbiddenException();
+    }
+    return { status: 'ok', data: null };
+  }
+
+  // POST /users/register - register new User
+  @Post('/register')
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() body: RegisterUserDto) {
+    await this.userService.createUser(body);
+    return { status: 'ok', data: null };
   }
 
   // PUT /users/:id
@@ -65,7 +89,7 @@ export class UserController {
 
   // PATCH /users/:id
   @Patch('/:id')
-  async updateUserField(@Req() req: Request, @Res() res: Response) {}
+  async updateUserField() {}
 
   // DELETE /users/:id
   @Delete('/:id')
