@@ -10,12 +10,12 @@ import {
   ParseIntPipe,
   Body,
   HttpCode,
-  HostParam,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { compare } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '../../services/jwt/jwt.service';
 
 import { UserService } from './user.sevice';
 
@@ -24,8 +24,10 @@ import { LoginUserDto } from './dto/loginUser.dto';
 import { RegisterUserDto } from './dto/registerUser.dto';
 
 import { ForbiddenException } from '@helpers/exceptions';
+import { JwtAuthGuard } from 'src/services/jwt/jwt-auth.guard';
 
 @Controller({ path: 'users' })
+// @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -34,9 +36,8 @@ export class UserController {
 
   // GET /users/
   @Get('/')
-  @HttpCode(200)
-  async getAllUsers(@HostParam('account') account: string) {
-    console.log(account);
+  @HttpCode(HttpStatus.OK)
+  async getAllUsers() {
     const users = await this.userService.getAllUsers();
     return { status: 'ok', body: [users] };
   }
@@ -58,8 +59,6 @@ export class UserController {
     const foundUser =
       await this.userService.getUserByLoginOrEmail(loginOrEmail);
 
-    console.log('foundUser', foundUser);
-
     if (!foundUser) {
       throw new ForbiddenException();
     }
@@ -70,7 +69,9 @@ export class UserController {
       throw new ForbiddenException();
     }
 
-    const jwt = this.jwtService.sign({ x: 1 }, { secret: 'qwerty' });
+    const jwt = this.jwtService.setSession({
+      userId: foundUser.id,
+    });
 
     return { status: 'ok', data: { accessToken: jwt } };
   }
