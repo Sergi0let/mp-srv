@@ -6,8 +6,8 @@ import { RedisService } from './redis.service';
   imports: [
     NestRedisModule.forRoot({
       config: {
-        host: String( process.env.REDIS_HOST),
-        port: Number( process.env.REDIS_PORT),
+        host: String(process.env.REDIS_HOST),
+        port: Number(process.env.REDIS_PORT),
       },
     }),
   ],
