@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { compare } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from './user.sevice';
 
@@ -26,7 +27,10 @@ import { ForbiddenException } from '@helpers/exceptions';
 
 @Controller({ path: 'users' })
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   // GET /users/
   @Get('/')
@@ -65,7 +69,10 @@ export class UserController {
     if (!isPasswordMatch) {
       throw new ForbiddenException();
     }
-    return { status: 'ok', data: null };
+
+    const jwt = this.jwtService.sign({ x: 1 }, { secret: 'qwerty' });
+
+    return { status: 'ok', data: { accessToken: jwt } };
   }
 
   // POST /users/register - register new User
