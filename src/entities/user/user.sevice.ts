@@ -42,7 +42,7 @@ export class UserService {
       ...userData,
       password: hashPassword,
     });
-    await this.userRepository.save(newUser);
+    return await this.userRepository.save(newUser);
   }
 
   public async getUserByLoginOrEmail(loginOrEmail: string) {

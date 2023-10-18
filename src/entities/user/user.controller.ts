@@ -27,7 +27,6 @@ import { ForbiddenException } from '@helpers/exceptions';
 import { JwtAuthGuard } from 'src/services/jwt/jwt-auth.guard';
 
 @Controller({ path: 'users' })
-// @UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -37,6 +36,7 @@ export class UserController {
   // GET /users/
   @Get('/')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async getAllUsers() {
     const users = await this.userService.getAllUsers();
     return { status: 'ok', body: [users] };
@@ -44,10 +44,11 @@ export class UserController {
 
   // GET /users/:id
   @Get('/:id')
-  async getUser(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
-    const userData = this.userService.getUserData(id);
+  @HttpCode(HttpStatus.OK)
+  async getUser(@Param('id', ParseIntPipe) id: number) {
+    const userData = await this.userService.getUserData(id);
     // delete userData.password;
-    return res.send({ status: 'ok', data: userData });
+    return { status: 'ok', data: userData };
   }
 
   // POST /users/ - login in app
@@ -69,7 +70,7 @@ export class UserController {
       throw new ForbiddenException();
     }
 
-    const jwt = this.jwtService.setSession({
+    const jwt = await this.jwtService.setSession({
       userId: foundUser.id,
     });
 

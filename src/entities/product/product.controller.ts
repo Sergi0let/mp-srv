@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -25,7 +26,7 @@ export class ProductController {
 
   // GET /products/
   @Get('/')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async getAllProducts() {
     const products = await this.productService.getAllProducts();
     return { status: 'ok', data: products };
@@ -33,7 +34,7 @@ export class ProductController {
 
   // GET /products/:id
   @Get('/:id')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async getProduct(@Param('id', ParseIntPipe) id: number) {
     const productData = await this.productService.getProductData(id);
     return { status: 'ok', data: productData };
@@ -41,7 +42,7 @@ export class ProductController {
 
   // POST /products/
   @Post('/')
-  @HttpCode(201)
+  @HttpCode(HttpStatus.OK)
   @UseInterceptors(
     FileInterceptor('image', getMulterOptions('images/products')),
   )
@@ -59,7 +60,7 @@ export class ProductController {
 
   // PUT /product/:id
   @Put('/:id')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: any,
@@ -70,7 +71,7 @@ export class ProductController {
 
   // DELETE /product/:id
   @Delete('/:id')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
     this.productService.deleteProduct(id);
     return { status: 'ok' };

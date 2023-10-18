@@ -11,6 +11,7 @@ export class JwtService {
 
   async setSession(payload: any) {
     const jwt = this.jwtService.sign(payload);
+    await this.redis.set(jwt, payload, Number(process.env.JWT_EXPIRE));
 
     return jwt;
   }

@@ -19,7 +19,5 @@ async function bootstrap() {
       : {}, // For production
   );
   await app.listen(process.env.SERVER_PORT);
-
-  console.log(process.env.NODE_ENV!);
 }
 bootstrap();
