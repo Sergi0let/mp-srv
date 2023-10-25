@@ -1,11 +1,12 @@
 import {
   IsEmail,
-  IsEnum,
+  IsString,
   IsISO8601,
   IsNotEmpty,
-  IsString,
+  IsEnum,
   MinLength,
 } from 'class-validator';
+
 import { E_Gender } from '../types';
 
 export class UpdateUserDto {
@@ -17,7 +18,7 @@ export class UpdateUserDto {
   nameFirst: string;
 
   @IsString()
-  @MinLength(2)
+  @MinLength(1)
   nameLast: string;
 
   @IsISO8601()

@@ -7,14 +7,17 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ name: 'login', type: 'varchar' })
+  login: string;
+
   @Column({ name: 'email', type: 'varchar' })
   email: string;
 
+  @Column({ name: 'phone', type: 'varchar', nullable: true })
+  phone: string;
+
   @Column({ name: 'password', type: 'varchar' })
   password: string;
-
-  @Column({ name: 'login', type: 'varchar' })
-  login: string;
 
   @Column({ name: 'name_first', type: 'varchar' })
   nameFirst: string;
